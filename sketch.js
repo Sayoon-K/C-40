@@ -1,71 +1,44 @@
-const Engine = Matter.Engine;
-const World= Matter.World;
-const Bodies = Matter.Bodies;
-const Constraint = Matter.Constraint;
+var canvas, backgroundImage;
 
-var engine, world;
-var backgroundImg;
-var hour;
+var gameState = 0;
+var playerCount;
+var allPlayers;
+var distance = 0;
+var database;
 
-var bg = "sunrise.png";
+var form, player, game;
 
-function preload() {
-    getBackgroundImg();
-    
+var cars, car1, car2, car3, car4;
+
+var track, car1_img, car2_img, car3_img, car4_img;
+
+function preload(){
+  track = loadImage("../images/track.jpg");
+  car1_img = loadImage("../images/car1.png");
+  car2_img = loadImage("../images/car2.png");
+  car3_img = loadImage("../images/car3.png");
+  car4_img = loadImage("../images/car4.png");
+  ground = loadImage("../images/ground.png");
 }
 
 function setup(){
-    var canvas = createCanvas(1200,700);
-    engine = Engine.create();
-    world = engine.world;
-
+  canvas = createCanvas(displayWidth - 20, displayHeight-30);
+  database = firebase.database();
+  game = new Game();
+  game.getState();
+  game.start();
 }
+
 
 function draw(){
-    if(backgroundImg)
-        background(backgroundImg);
-
-    Engine.update(engine);
-
-    fill("black");
-    textSize(30);
-    
-    if(hour>=12){
-        text("Time : "+ hour%12 + " PM", 50,100);
-    }else if(hour==0){
-        text("Time : 12 AM",100,100);
-    }else{
-        text("Time : "+ hour%12 + " AM", 50,100);
-    }
-
-}
-
-async function getBackgroundImg(){
-    var response=await fetch("http://worldtimeapi.org/api/timezone/Asia/Kolkata")
-    var responseJSON=await response.json()
-    var datetime=responseJSON.datetime
-    hour=datetime.slice(11,13)
-    // write code to fetch time from API
-    
- 
-    //change the data in JSON format and store it in variable responseJSON
-    
-
-    
-    //fetch datetime from responseJSON
-    
-    
-
-    // slice the datetime to extract hour
-    
-
-    
-    if(hour>=0 && hour<18 ){
-        bg = "sunrise.png";
-    }
-    else{
-        bg="sunset.png"
-    }
-    
-    backgroundImg = loadImage(bg);
+  if(playerCount === 4){
+    game.update(1);
+  }
+  if(gameState === 1){
+    clear();
+    game.play();
+  }
+  if(gameState === 2){
+    game.end();
+  }
 }
